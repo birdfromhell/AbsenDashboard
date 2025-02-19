@@ -77,7 +77,7 @@
 <script>
     function editStudent(studentId) {
         $.ajax({
-            url: `get/${studentId}/`,  // Updated URL
+            url: `/dashboard/admin/students/get/${studentId}/`,  // Updated URL
             type: 'GET',
             success: function(data) {
                 $('#edit_student_id').val(data.id);
@@ -106,7 +106,7 @@
         console.log('Form data before sending:', formData);  // Log form data before sending the AJAX request
         
         $.ajax({
-            url: `edit/${studentId}/`,
+            url: `/dashboard/admin/students/edit/${studentId}/`,
             type: 'POST',
             data: formData,
             headers: {
