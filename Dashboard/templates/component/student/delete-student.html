@@ -1,0 +1,34 @@
+<div class="modal fade" id="deleteStudentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Anda Yakin Mengapus Siswa Ini?</p>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteStudentForm" method="POST">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger">Hapus</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function deleteStudent(studentId) {
+    if (studentId) {
+        const deleteForm = document.getElementById('deleteStudentForm');
+        deleteForm.action = `delete/${studentId}/`;
+        
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteStudentModal'));
+        deleteModal.show();
+    }
+}
+</script>

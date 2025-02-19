@@ -1,0 +1,125 @@
+<div class="modal fade" id="editStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Student</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="post" id="editStudentForm">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <input type="hidden" id="edit_student_id" name="student_id">
+                <div class="mb-3">
+                  <label class="form-label">NISN</label>
+                  <input type="text" class="form-control" name="nisn" id="edit_nisn" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Nama Lengkap</label>
+                  <input type="text" class="form-control" name="nama_lengkap" id="edit_nama_lengkap" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" name="email" id="edit_email" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">No. WhatsApp</label>
+                  <input type="text" class="form-control" name="nomor_whatsapp" id="edit_nomor_whatsapp" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Jenis Kelamin</label>
+                  <select class="form-select" name="jenis_kelamin" id="edit_jenis_kelamin" required>
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Tinggi Badan (cm)</label>
+                  <input type="number" class="form-control" name="tinggi_badan" id="edit_tinggi_badan" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Berat Badan (kg)</label>
+                  <input type="number" class="form-control" name="berat_badan" id="edit_berat_badan" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Golongan Darah</label>
+                  <select class="form-select" name="golongan_darah" id="edit_golongan_darah" required>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="AB">AB</option>
+                    <option value="O">O</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Status</label>
+                  <select class="form-select" name="status_siswa" id="edit_status_siswa" required>
+                    <option value="AKTIF">Aktif</option>
+                    <option value="ALUMNI">Alumni</option>
+                    <option value="PINDAH">Pindah</option>
+                    <option value="DIKELUARKAN">Dikeluarkan</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+    function editStudent(studentId) {
+        $.ajax({
+            url: `get/${studentId}/`,  // Updated URL
+            type: 'GET',
+            success: function(data) {
+                $('#edit_student_id').val(data.id);
+                $('#edit_nisn').val(data.nisn);
+                $('#edit_nama_lengkap').val(data.nama_lengkap);
+                $('#edit_email').val(data.email);
+                $('#edit_nomor_whatsapp').val(data.nomor_whatsapp);
+                $('#edit_jenis_kelamin').val(data.jenis_kelamin);
+                $('#edit_tinggi_badan').val(data.tinggi_badan);
+                $('#edit_berat_badan').val(data.berat_badan);
+                $('#edit_golongan_darah').val(data.golongan_darah);
+                $('#edit_status_siswa').val(data.status_siswa);
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr);
+                alert('Error fetching student data: ' + xhr.responseText);
+            }
+        });
+    }
+    
+    $('#editStudentForm').on('submit', function(e) {
+        e.preventDefault();
+        const studentId = $('#edit_student_id').val();
+        
+        $.ajax({
+            url: `edit/${studentId}/`,
+            type: 'POST',
+            data: $(this).serialize(),
+            headers: {
+                'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#editStudentModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert('Error updating student: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                alert('Error updating student: ' + xhr.responseText);
+            }
+        });
+    });
+</script>

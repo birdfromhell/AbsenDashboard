@@ -1,0 +1,22 @@
+{% extends 'base.html' %}{% load static %}
+{% load sass_tags %}
+{% block css %}
+<!-- Plugins css start-->
+<link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/jsgrid.scss' %}">
+<!-- Plugins css Ends-->
+{% endblock css %}
+{% block content %}
+{% comment %} <div class="page-body"> {% endcomment %}
+  <!-- Container-fluid starts-->
+  {% include 'component/users/table.html' %}
+  <!-- Container-fluid Ends-->
+{% comment %} </div> {% endcomment %}
+{% endblock content %}
+{% block scriptcontent %}
+<!-- Plugins JS start-->
+<script src="{% static 'assets/js/jsgrid/jsgrid.min.js' %}"></script>
+<script src="{% static 'assets/js/jsgrid/griddata.js' %}"></script>
+<script src="{% static 'assets/js/jsgrid/jsgrid.js' %}"></script>
+
+<!-- Plugins JS Ends-->
+{% endblock scriptcontent %}

@@ -1,0 +1,83 @@
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="card">
+            <div class="card-header pb-0">
+                <div class="row">
+                  <div class="col-6">
+                    <h5>Daftar Siswa</h5>
+                  </div>
+                  <div class="col-6 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                      <i class="fa fa-plus"></i> Add Student
+                    </button>
+                  </div>
+                </div>
+              </div>
+          <div class="card-body">
+            <div class="dt-ext table-responsive">
+              <table class="display nowrap" id="student-table">
+              <thead>
+                <tr>
+                  <th>Aksi</th>
+                  <th>NISN</th>
+                  <th>Username</th>
+                  <th>Nama Lengkap</th>
+                  <th>Email</th>
+                  <th>Jenis Kelamin</th>
+                  <th>No. WhatsApp</th>
+                  <th>Tinggi Badan</th>
+                  <th>Berat Badan</th>
+                  <th>Golongan Darah</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for student in students %}
+                <tr>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-primary btn-xs" onclick="editStudent('{{ student.id }}')" data-bs-toggle="modal" data-bs-target="#editStudentModal">
+                        <i class="fa fa-edit"></i>
+                      </button>
+                      <button class="btn btn-danger btn-xs" onclick="deleteStudent('{{ student.id }}')">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                  </td>
+                  <td>{{ student.nisn }}</td>
+                  <td>{{ student.username }}</td>
+                  <td>{{ student.nama_lengkap }}</td>
+                  <td>{{ student.email }}</td>
+                  <td>{{ student.get_jenis_kelamin_display }}</td>
+                  <td>{{ student.nomor_whatsapp }}</td>
+                  <td>{{ student.tinggi_badan }} cm</td>
+                  <td>{{ student.berat_badan }} kg</td>
+                  <td>{{ student.golongan_darah }}</td>
+                  <td>
+                    <div class="badge {% if student.status_siswa == 'AKTIF' %}badge-success{% else %}badge-danger{% endif %}">
+                      {{ student.get_status_siswa_display }}
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include 'component/student/add-student.html' %}
+  {% include 'component/student/delete-student.html' %}
+  {% include 'component/student/edit-student.html' %}
+</div>
