@@ -130,12 +130,19 @@ def edit_student(request, student_id):
         student.berat_badan = request.POST.get('berat_badan')
         student.golongan_darah = request.POST.get('golongan_darah')
         student.status_siswa = request.POST.get('status_siswa')
+        
+        print(f"Before saving: {student.__dict__}")  # Log student data before saving
+        
         student.save()
+        
+        print(f"After saving: {student.__dict__}")  # Log student data after saving
+        
         return JsonResponse({
             'status': 'success',
             'message': 'Student updated successfully'
         })
     except Exception as e:
+        print(f"Exception occurred: {str(e)}")  # Log any exceptions that occur
         return JsonResponse({
             'status': 'error',
             'message': str(e)

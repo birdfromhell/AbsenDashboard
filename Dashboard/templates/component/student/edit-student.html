@@ -102,14 +102,18 @@
         e.preventDefault();
         const studentId = $('#edit_student_id').val();
         
+        const formData = $(this).serialize();
+        console.log('Form data before sending:', formData);  // Log form data before sending the AJAX request
+        
         $.ajax({
             url: `edit/${studentId}/`,
             type: 'POST',
-            data: $(this).serialize(),
+            data: formData,
             headers: {
                 'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
             },
             success: function(response) {
+                console.log('Response data:', response);  // Log response data after receiving the AJAX request
                 if (response.status === 'success') {
                     $('#editStudentModal').modal('hide');
                     location.reload();
@@ -118,6 +122,7 @@
                 }
             },
             error: function(xhr) {
+                console.error('Error:', xhr);  // Log any errors that occur during the AJAX request
                 alert('Error updating student: ' + xhr.responseText);
             }
         });
