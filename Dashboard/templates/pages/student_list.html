@@ -46,6 +46,38 @@
     .display {
         width: 100% !important;
     }
+    .display {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_scrollHead table,
+    .dataTables_scrollBody table {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .table thead th {
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        background-color: #f8f9fa !important;
+        padding: 12px 8px !important;
+    }
+    
+    .table tbody td {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 8px !important;
+    }
+
+    .dataTables_wrapper .dataTables_scroll {
+        margin-bottom: 15px;
+    }
+
+    .dataTables_scrollBody {
+        min-height: 300px;
+    }
     </style>
 {% endblock css %}
 
@@ -71,15 +103,62 @@
             pageLength: 10,
             scrollX: true,
             responsive: true,
-            autoWidth: false, // Add this
-            columnDefs: [   // Add column definitions
+            autoWidth: false,
+            columnDefs: [
                 {
                     targets: 0, // Action column
-                    width: '50px',
-                    orderable: false
+                    width: '80px',
+                    orderable: false,
+                    className: 'text-center'
                 },
                 {
-                    targets: '_all', // All other columns
+                    targets: [1], // NISN
+                    width: '100px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [2], // Sekolah
+                    width: '200px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [3], // Nama Lengkap
+                    width: '200px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [4], // Email
+                    width: '200px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [5], // Jenis Kelamin
+                    width: '120px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [6], // No. WhatsApp
+                    width: '150px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [7,8], // Tinggi & Berat Badan
+                    width: '120px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [9], // Golongan Darah
+                    width: '120px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [10], // Username
+                    width: '150px',
+                    className: 'text-center'
+                },
+                {
+                    targets: [11], // Status
+                    width: '100px',
                     className: 'text-center'
                 }
             ],

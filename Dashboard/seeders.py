@@ -1,6 +1,9 @@
 from django.contrib.auth.hashers import make_password
-from .models import User, Student, School
+from .models import User, Student, School, Attendance
 import uuid
+from django.utils import timezone
+from datetime import datetime, timedelta
+import random
 
 def seed_users():
     users = [
@@ -42,7 +45,7 @@ def seed_students():
             'nisn': '1234567890',
             'email': 'student1@example.com',
             'password': make_password('student123'),
-            'nama_lengkap': 'John Doe',
+            'nama_lengkap': 'f',
             'jenis_kelamin': 'L',
             'nomor_whatsapp': '081234567890',
             'tinggi_badan': 170,
@@ -106,3 +109,51 @@ def seed_schools():
         )
         if created_count:
             created_count += 1
+
+
+def seed_attendance():
+    students = Student.objects.filter(status_aktif=True)
+    
+    attendance_data = []
+    today = timezone.now().date()
+    
+    for student in students:
+        school = student.sekolah
+        if school:
+            for i in range(7):
+                date = today - timedelta(days=i)
+                attendance_data.append({
+                    'id': uuid.uuid4(),
+                    'student': student,
+                    'sekolah': school,
+                    'date': date,
+                    'time': datetime.strptime('07:30', '%H:%M').time(),
+                    'status': random.choice(['HADIR', 'ALPA']),
+                    'absen_type': 'MASUK',
+                    'location': 'Gerbang Sekolah',
+                })
+                
+                attendance_data.append({
+                    'id': uuid.uuid4(),
+                    'student': student,
+                    'sekolah': school,
+                    'date': date,
+                    'time': datetime.strptime('15:00', '%H:%M').time(),
+                    'status': random.choice(['HADIR', 'ALPA']),
+                    'absen_type': 'PULANG',
+                    'location': 'Gerbang Sekolah',
+                })
+
+    created_count = 0
+    for data in attendance_data:
+        _, created = Attendance.objects.get_or_create(
+            student=data['student'],
+            sekolah=data['sekolah'],
+            date=data['date'],
+            absen_type=data['absen_type'],
+            defaults=data
+        )
+        if created:
+            created_count += 1
+    
+    print(f"Attendance records seeded successfully! ({created_count} new records created)")

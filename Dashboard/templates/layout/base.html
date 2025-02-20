@@ -31,7 +31,8 @@
   <!-- Feather icon-->
   <link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/feather-icon.scss' %}">
   <!-- Plugins css start-->
-  {% block css %}{% endblock css %}
+  {% block css %}
+  {% endblock css %}
   <!-- Plugins css Ends-->
   <!-- Bootstrap css-->
   <link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/bootstrap.scss' %}">
@@ -90,6 +91,11 @@
   <!-- Theme js-->
   <script src="{% static 'assets/js/theme-customizer/customizer.js' %}"></script>
   <script src="{% static 'assets/js/script.js' %}"></script>
+  <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+  <script src="{% static 'assets/js/notify/bootstrap-notify.min.js' %}"></script>
+  <script src="{% static 'assets/js/icons/icons-notify.js' %}"></script>
+  <script src="{% static 'assets/js/icons/icon-clipart.js' %}"></script>
+  <script src="https://kit.fontawesome.com/e85ecb4c5b.js" crossorigin="anonymous"></script>
   <!-- login js-->
   <!-- Plugin used-->
 </body>

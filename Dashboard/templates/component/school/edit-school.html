@@ -1,0 +1,112 @@
+<div class="modal fade" id="editSchoolModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit School</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" id="editSchoolForm">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <input type="hidden" name="school_id" id="edit_school_id">
+              <div class="mb-3">
+                <label class="form-label">NPSN</label>
+                <input type="text" class="form-control" name="npsn" id="edit_npsn" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Nama Sekolah</label>
+                <input type="text" class="form-control" name="nama_sekolah" id="edit_nama_sekolah" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Alamat</label>
+                <textarea class="form-control" name="alamat" id="edit_alamat" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Kota</label>
+                <input type="text" class="form-control" name="kota" id="edit_kota" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Provinsi</label>
+                <input type="text" class="form-control" name="provinsi" id="edit_provinsi" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Kode Pos</label>
+                <input type="text" class="form-control" name="kode_pos" id="edit_kode_pos" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Telepon</label>
+                <input type="text" class="form-control" name="telepon" id="edit_telepon" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" id="edit_email" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Website</label>
+                <input type="url" class="form-control" name="website" id="edit_website">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Kepala Sekolah</label>
+                <input type="text" class="form-control" name="kepala_sekolah" id="edit_kepala_sekolah" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Guru PJ</label>
+                <select class="form-select" name="guru" id="edit_guru" required>
+                  <option value="">Pilih Guru</option>
+                  {% for teacher in teachers %}
+                  <option value="{{ teacher.id }}">{{ teacher.nama_lengkap }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status" id="edit_status" required>
+                  <option value="AKTIF">Aktif</option>
+                  <option value="TIDAK_AKTIF">Tidak Aktif</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function editSchool(schoolId) {
+      fetch(`/dashboard/admin/schools/edit/${schoolId}/`)
+          .then(response => response.json())
+          .then(data => {
+              // Populate form fields with existing data
+              document.getElementById('edit_school_id').value = data.id;
+              document.getElementById('edit_npsn').value = data.npsn;
+              document.getElementById('edit_nama_sekolah').value = data.nama_sekolah;
+              document.getElementById('edit_alamat').value = data.alamat;
+              document.getElementById('edit_kota').value = data.kota;
+              document.getElementById('edit_provinsi').value = data.provinsi;
+              document.getElementById('edit_kode_pos').value = data.kode_pos;
+              document.getElementById('edit_telepon').value = data.telepon;
+              document.getElementById('edit_email').value = data.email;
+              document.getElementById('edit_website').value = data.website;
+              document.getElementById('edit_kepala_sekolah').value = data.kepala_sekolah;
+              document.getElementById('edit_guru').value = data.guru;
+              document.getElementById('edit_status').value = data.status;
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              alert('Error fetching school data');
+          });
+      
+      // Update form action URL
+      document.getElementById('editSchoolForm').action = `/dashboard/admin/schools/edit/${schoolId}/`;
+  }
+  </script>

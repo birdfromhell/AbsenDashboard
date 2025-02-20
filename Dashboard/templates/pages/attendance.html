@@ -1,0 +1,68 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+{% load sass_tags %}
+
+{% block css %}
+<!-- Plugins css start-->
+<link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/datatables.scss' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/buttons.dataTables.min.css' %}">
+<style>
+    .table thead th {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+    
+    .table tbody td {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="page-body">
+    {% include 'layout/breadcrumb.html' %}
+    {% include 'component/attendance/attendance-list.html' %}
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+<!-- Plugins JS start-->
+<script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    let table = $('#attendance-table').DataTable({
+        pageLength: 10,
+        scrollX: true,
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel-o"></i> Excel',
+                className: 'btn btn-success',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7]
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                className: 'btn btn-danger',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7]
+                }
+            }
+        ]
+    });
+
+    $('#school-filter').on('change', function() {
+        let schoolId = $(this).val();
+        if(schoolId) {
+            table.column(1).search($(this).find('option:selected').text()).draw();
+        } else {
+            table.column(1).search('').draw();
+        }
+    });
+});
+</script>
+{% endblock scriptcontent %}

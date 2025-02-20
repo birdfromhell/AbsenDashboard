@@ -1,0 +1,87 @@
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="card">
+            <div class="card-header pb-0">
+                <div class="row">
+                  <div class="col-6">
+                    <h5>Daftar Sekolah</h5>
+                  </div>
+                  <div class="col-6 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSchoolModal">
+                      <i class="fa fa-plus"></i> Add School
+                    </button>
+                  </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="dt-ext table-responsive">
+                    <table class="display nowrap" id="school-table">
+                        <thead>
+                            <tr>
+                                <th>Aksi</th>
+                                <th>NPSN</th>
+                                <th>Nama Sekolah</th>
+                                <th>Alamat</th>
+                                <th>Kota</th>
+                                <th>Provinsi</th>
+                                <th>Kode Pos</th>
+                                <th>Telepon</th>
+                                <th>Email</th>
+                                <th>Website</th>
+                                <th>Kepala Sekolah</th>
+                                <th>Guru PJ</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for school in schools %}
+                            <tr>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary btn-xs" onclick="editSchool('{{ school.id }}')" data-bs-toggle="modal" data-bs-target="#editSchoolModal">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-xs" onclick="deleteSchool('{{ school.id }}')" data-bs-toggle="modal" data-bs-target="#deleteSchoolModal">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>{{ school.npsn }}</td>
+                                <td>{{ school.nama_sekolah }}</td>
+                                <td>{{ school.alamat }}</td>
+                                <td>{{ school.kota }}</td>
+                                <td>{{ school.provinsi }}</td>
+                                <td>{{ school.kode_pos }}</td>
+                                <td>{{ school.telepon }}</td>
+                                <td>{{ school.email }}</td>
+                                <td>{{ school.website|default:'-' }}</td>
+                                <td>{{ school.kepala_sekolah }}</td>
+                                <td>{{ school.guru.nama_lengkap|default:'-' }}</td>
+                                <td>
+                                    <div class="badge {% if school.status == 'AKTIF' %}badge-success{% else %}badge-danger{% endif %}">
+                                        {{ school.get_status_display }}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% include 'component/school/add-school.html' %}
+{% include 'component/school/edit-school.html' %}
+{% include 'component/school/delete-school.html' %}

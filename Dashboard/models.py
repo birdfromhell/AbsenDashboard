@@ -85,6 +85,14 @@ class Student(models.Model):
     status_aktif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    sekolah = models.ForeignKey(
+        'School',
+        on_delete=models.CASCADE,
+        related_name='students',
+        verbose_name='Sekolah',
+        null=True,
+        blank=True
+    )
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -142,3 +150,43 @@ class School(models.Model):
 
     def __str__(self):
         return f"{self.npsn} - {self.nama_sekolah}"
+    
+class Attendance(models.Model):
+    STATUS_CHOICES = [
+        ('HADIR', 'Hadir'),
+        ('ALPA', 'Alpa'),
+    ]
+
+    ABSEN_TYPE_CHOICES = [
+        ('MASUK', 'Masuk'),
+        ('PULANG', 'Pulang')
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date = models.DateField()
+    time = models.TimeField(auto_now_add=True)  # Add time field
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    absen_type = models.CharField(max_length=6, choices=ABSEN_TYPE_CHOICES)
+    location = models.CharField(max_length=255, null=True, blank=True)  # Add location field
+    photo = models.ImageField(upload_to='attendance_photos/', null=True, blank=True)  # Add photo field
+    student = models.ForeignKey(
+        'Student',
+        on_delete=models.CASCADE,
+        related_name='attendances'
+    )
+    sekolah = models.ForeignKey(
+        'School',
+        on_delete=models.CASCADE,
+        related_name='attendances'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'attendance'
+        verbose_name = 'Attendance'
+        verbose_name_plural = 'Attendances'
+        unique_together = ['date', 'student', 'sekolah', 'absen_type']
+
+    def __str__(self):
+        return f"{self.student.nama_lengkap} - {self.date} - {self.time} - {self.status} - {self.get_absen_type_display()}"

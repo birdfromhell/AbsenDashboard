@@ -1,0 +1,59 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Daftar Absensi</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-select float-end w-auto" id="school-filter">
+                                <option value="">Semua Sekolah</option>
+                                {% for school in schools %}
+                                <option value="{{ school.id }}">{{ school.nama_sekolah }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="dt-ext table-responsive">
+                        <table class="display nowrap" id="attendance-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Sekolah</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Tanggal</th>
+                                    <th>Waktu</th>
+                                    <th>Status</th>
+                                    <th>Tipe Absen</th>
+                                    <th>Lokasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in attendances %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ attendance.sekolah.nama_sekolah }}</td>
+                                    <td>{{ attendance.student.nama_lengkap }}</td>
+                                    <td>{{ attendance.date|date:"d/m/Y" }}</td>
+                                    <td>{{ attendance.time|time:"H:i" }}</td>
+                                    <td>
+                                        <div class="badge {% if attendance.status == 'HADIR' %}badge-success{% else %}badge-danger{% endif %}">
+                                            {{ attendance.get_status_display }}
+                                        </div>
+                                    </td>
+                                    <td>{{ attendance.get_absen_type_display }}</td>
+                                    <td>{{ attendance.location|default:'-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

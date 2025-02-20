@@ -24,22 +24,23 @@
               </div>
           <div class="card-body">
             <div class="dt-ext table-responsive">
-              <table class="display nowrap" id="student-table">
-              <thead>
-                <tr>
-                  <th>Aksi</th>
-                  <th>NISN</th>
-                  <th>Username</th>
-                  <th>Nama Lengkap</th>
-                  <th>Email</th>
-                  <th>Jenis Kelamin</th>
-                  <th>No. WhatsApp</th>
-                  <th>Tinggi Badan</th>
-                  <th>Berat Badan</th>
-                  <th>Golongan Darah</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
+              <table class="display nowrap" id="student-table" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="min-width:80px">Aksi</th>
+                        <th style="min-width:100px">NISN</th>
+                        <th style="min-width:200px">Sekolah</th>
+                        <th style="min-width:200px">Nama Lengkap</th>
+                        <th style="min-width:200px">Email</th>
+                        <th style="min-width:120px">Jenis Kelamin</th>
+                        <th style="min-width:150px">No. WhatsApp</th>
+                        <th style="min-width:120px">Tinggi Badan</th>
+                        <th style="min-width:120px">Berat Badan</th>
+                        <th style="min-width:120px">Golongan Darah</th>
+                        <th style="min-width:150px">Username</th>
+                        <th style="min-width:100px">Status</th>
+                    </tr>
+                </thead>
               <tbody>
                 {% for student in students %}
                 <tr>
@@ -55,7 +56,7 @@
                   </td>
                   </td>
                   <td>{{ student.nisn }}</td>
-                  <td>{{ student.username }}</td>
+                  <td>{{ student.sekolah.nama_sekolah|default:'-' }}</td>
                   <td>{{ student.nama_lengkap }}</td>
                   <td>{{ student.email }}</td>
                   <td>{{ student.get_jenis_kelamin_display }}</td>
@@ -63,6 +64,7 @@
                   <td>{{ student.tinggi_badan }} cm</td>
                   <td>{{ student.berat_badan }} kg</td>
                   <td>{{ student.golongan_darah }}</td>
+                  <td>{{ student.username }}</td>
                   <td>
                     <div class="badge {% if student.status_siswa == 'AKTIF' %}badge-success{% else %}badge-danger{% endif %}">
                       {{ student.get_status_siswa_display }}
