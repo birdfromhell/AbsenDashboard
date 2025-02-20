@@ -7,9 +7,36 @@ from django.contrib.auth.hashers import check_password
 from Dashboard.models import Student, School
 from .serializers import StudentSerializer, StudentLoginSerializer, SchoolSerializer
 
-class SchoolViewSet(viewsets.ModelViewSet):
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def check_session(request):
+    return Response({
+        'status': 200,
+        'message': 'Session is valid',
+        'data': None
+    })
+
+class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
+    permission_classes = [AllowAny]
+    
+    def list(self, request, *args, **kwargs):
+        try:
+            schools = self.get_queryset()
+            serializer = self.get_serializer(schools, many=True)
+            return Response({
+                'status': 200,
+                'data': serializer.data,
+                'message': 'Data sekolah berhasil diambil'
+            })
+        except Exception as e:
+            return Response({
+                'status': 500,
+                'message': str(e),
+                'type': 'error'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -84,3 +111,4 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'message': 'gagal',
                 'type': 'error'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        

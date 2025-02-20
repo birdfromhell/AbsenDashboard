@@ -14,8 +14,7 @@ class SchoolSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'npsn', 'nama_sekolah', 'alamat', 'kota', 
             'provinsi', 'kode_pos', 'telepon', 'email', 
-            'website', 'kepala_sekolah', 'guru', 'status',
-            'created_at', 'updated_at'
+            'website', 'kepala_sekolah', 'guru', 'status'
         ]
 
 class StudentSerializer(serializers.ModelSerializer):
