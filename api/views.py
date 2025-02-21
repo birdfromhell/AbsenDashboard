@@ -1,11 +1,13 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
 from django.contrib.auth.hashers import check_password
-from Dashboard.models import Student, School
-from .serializers import StudentSerializer, StudentLoginSerializer, SchoolSerializer
+from Dashboard.models import Student, School, Attendance
+from .serializers import StudentSerializer, StudentLoginSerializer, SchoolSerializer, AttendanceSerializer
+from django.utils import timezone
 
 
 @api_view(['GET'])
@@ -112,3 +114,94 @@ class StudentViewSet(viewsets.ModelViewSet):
                 'type': 'error'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Attendance.objects.all()
+        student_id = self.request.query_params.get('student', None)
+        school_id = self.request.query_params.get('school', None)
+        date = self.request.query_params.get('date', None)
+        
+        if student_id:
+            queryset = queryset.filter(student_id=student_id)
+        if school_id:
+            queryset = queryset.filter(sekolah_id=school_id)
+        if date:
+            queryset = queryset.filter(date=date)
+            
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        try:
+            request.data['date'] = request.data.get('date', timezone.now().date())
+            serializer = self.get_serializer(data=request.data)
+            
+            if not serializer.is_valid():
+                return Response({
+                    'status': 400,
+                    'message': 'Data tidak valid',
+                    'errors': serializer.errors,
+                    'type': 'error'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            self.perform_create(serializer)
+            return Response({
+                'status': 201,
+                'data': serializer.data,
+                'message': 'Absensi berhasil dicatat'
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({
+                'status': 500,
+                'message': str(e),
+                'type': 'error'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            return Response({
+                'status': 200,
+                'data': serializer.data,
+                'message': 'Data absensi berhasil diambil'
+            })
+        except Exception as e:
+            return Response({
+                'status': 500,
+                'message': str(e),
+                'type': 'error'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_attendance_image_history(request, user_id):
+    try:
+        attendances = Attendance.objects.filter(
+            student_id=user_id,
+            photo__isnull=False
+        ).order_by('-date', '-time').values(
+            'absen_type',
+            'photo',
+            'location',
+            'time',
+            'date'
+        )
+
+        return Response({
+            'status': 200,
+            'data': attendances,
+            'message': 'Data riwayat foto absensi berhasil diambil'
+        })
+    except Exception as e:
+        return Response({
+            'status': 500,
+            'message': str(e),
+            'type': 'error'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
