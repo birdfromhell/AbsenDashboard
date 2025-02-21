@@ -188,7 +188,7 @@ def get_attendance_image_history(request, user_id):
         ).order_by('-date', '-time').values(
             'absen_type',
             'photo',
-            'location',
+            'location', 
             'time',
             'date'
         )
