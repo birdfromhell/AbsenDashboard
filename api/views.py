@@ -180,7 +180,6 @@ class AttendanceViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_attendance_image_history(request, user_id):
     try:
         attendances = Attendance.objects.filter(
