@@ -54,9 +54,9 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-6. Create superuser
+6. Run seeders
 ```bash
-python manage.py createsuperuser
+python manage.py seed_db
 ```
 
 7. Run the development server
