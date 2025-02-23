@@ -1,5 +1,5 @@
 from django.contrib.auth.hashers import make_password
-from .models import User, Student, School, Attendance
+from .models import User, Student, School, Attendance, AttendancePermission
 import uuid
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -157,3 +157,83 @@ def seed_attendance():
             created_count += 1
     
     print(f"Attendance records seeded successfully! ({created_count} new records created)")
+
+
+def seed_attendance_permissions():
+    students = Student.objects.filter(status_aktif=True)
+    
+    permission_data = []
+    today = timezone.now().date()
+    
+    # Sample reasons for permissions
+    sakit_reasons = [
+        "Demam dan flu",
+        "Sakit perut",
+        "Terapi medis",
+        "Check up dokter",
+        "Rawat inap"
+    ]
+    
+    izin_reasons = [
+        "Acara keluarga",
+        "Kompetisi akademik", 
+        "Kegiatan OSIS",
+        "Urusan keluarga penting",
+        "Acara keagamaan"
+    ]
+    
+    # Sample accept statuses with weighted probabilities
+    accept_statuses = ['PENDING', 'APPROVED', 'REJECTED']
+    accept_weights = [0.3, 0.5, 0.2]  # 30% pending, 50% approved, 20% rejected
+    
+    for student in students:
+        school = student.sekolah
+        if school:
+            # Create permissions for the last 30 days
+            for i in range(30):
+                # Only create permission with 20% probability
+                if random.random() < 0.2:
+                    date = today - timedelta(days=i)
+                    
+                    # Randomly choose between SAKIT and IZIN
+                    permission_type = random.choice(['SAKIT', 'IZIN'])
+                    reason = random.choice(sakit_reasons if permission_type == 'SAKIT' else izin_reasons)
+                    
+                    # Random accept status based on weights
+                    accept_status = random.choices(accept_statuses, weights=accept_weights, k=1)[0]
+                    
+                    permission_data.append({
+                        'id': uuid.uuid4(),
+                        'student': student,
+                        'sekolah': school,
+                        'date': date,
+                        'permission_type': permission_type,
+                        'reason': reason,
+                        'accept_status': accept_status,
+                        # Document field is left empty since it's a file field
+                        'document': None
+                    })
+
+    created_count = 0
+    for data in permission_data:
+        try:
+            # Try to create permission if it doesn't exist
+            _, created = AttendancePermission.objects.get_or_create(
+                student=data['student'],
+                sekolah=data['sekolah'],
+                date=data['date'],
+                permission_type=data['permission_type'],
+                defaults={
+                    'id': data['id'],
+                    'reason': data['reason'],
+                    'accept_status': data['accept_status'],
+                    'document': data['document']
+                }
+            )
+            if created:
+                created_count += 1
+        except Exception as e:
+            print(f"Error creating permission: {str(e)}")
+            continue
+    
+    print(f"Attendance permissions seeded successfully! ({created_count} new permissions created)")

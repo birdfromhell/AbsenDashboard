@@ -1,0 +1,228 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+<style>
+    .badge-pending { background-color: #f0ad4e; color: white; }
+    .badge-approved { background-color: #5cb85c; color: white; }
+    .badge-rejected { background-color: #d9534f; color: white; }
+    .action-buttons .btn { margin: 0 2px; }
+    .badge { padding: 5px 10px; font-size: 12px; }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="page-body">
+    {% include 'layout/breadcrumb.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Daftar Izin/Sakit - {{ school.nama_sekolah }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filter Section -->
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Filter Tanggal</label>
+                                        <input type="date" class="form-control" id="date_filter">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Filter Status</label>
+                                        <select class="form-select" id="status_filter">
+                                            <option value="">Semua Status</option>
+                                            <option value="PENDING">Pending</option>
+                                            <option value="APPROVED">Disetujui</option>
+                                            <option value="REJECTED">Ditolak</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Filter Tipe</label>
+                                        <select class="form-select" id="type_filter">
+                                            <option value="">Semua Tipe</option>
+                                            <option value="SAKIT">Sakit</option>
+                                            <option value="IZIN">Izin</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="permission-table" class="display">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>NISN</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Dokumen</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for permission in permissions %}
+                                    <tr>
+                                        <td>{{ permission.date|date:"d/m/Y" }}</td>
+                                        <td>{{ permission.student.nisn }}</td>
+                                        <td>{{ permission.student.nama_lengkap }}</td>
+                                        <td>{{ permission.get_permission_type_display }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ permission.accept_status|lower }}">
+                                                {{ permission.get_accept_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if permission.document %}
+                                                <a href="{{ permission.document.url }}" target="_blank" class="btn btn-info btn-xs">
+                                                    <i class="fa fa-file"></i>
+                                                </a>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if permission.accept_status == 'PENDING' %}
+                                            <div class="action-buttons">
+                                                <button onclick="updateStatus('{{ permission.id }}', 'APPROVED')" 
+                                                        class="btn btn-success btn-xs" 
+                                                        title="Setujui">
+                                                    <i class="fa fa-check"></i>
+                                                </button>
+                                                <button onclick="updateStatus('{{ permission.id }}', 'REJECTED')" 
+                                                        class="btn btn-danger btn-xs"
+                                                        title="Tolak">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+<script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'assets/js/sweet-alert/sweetalert.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    var table = $('#permission-table').DataTable({
+        order: [[0, 'desc']],
+        pageLength: 10,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Selanjutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+
+    // Apply filters
+    $('#date_filter, #status_filter, #type_filter').on('change', function() {
+        table.draw();
+    });
+
+    // Custom filtering function
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        var date = $('#date_filter').val();
+        var status = $('#status_filter').val();
+        var type = $('#type_filter').val();
+
+        // Convert date to match table format
+        if (date) {
+            var d = new Date(date);
+            date = ('0' + d.getDate()).slice(-2) + '/' +
+                   ('0' + (d.getMonth() + 1)).slice(-2) + '/' +
+                   d.getFullYear();
+        }
+
+        var rowDate = data[0];
+        var rowStatus = data[4];
+        var rowType = data[3];
+
+        if (date && rowDate !== date) return false;
+        if (status && !rowStatus.includes(status)) return false;
+        if (type && !rowType.includes(type)) return false;
+
+        return true;
+    });
+});
+
+function updateStatus(permissionId, status) {
+    const action = status === 'APPROVED' ? 'menyetujui' : 'menolak';
+    
+    swal({
+        title: "Konfirmasi",
+        text: `Apakah Anda yakin ingin ${action} izin ini?`,
+        icon: "warning",
+        buttons: true,
+        dangerMode: status === 'REJECTED'
+    })
+    .then((willUpdate) => {
+        if (willUpdate) {
+            fetch(`/dashboard/guru/permissions/${permissionId}/update-status/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    swal("Berhasil!", data.message, "success")
+                    .then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.error || 'Terjadi kesalahan');
+                }
+            })
+            .catch(error => {
+                swal("Error!", error.message, "error");
+            });
+        }
+    });
+}
+</script>
+{% endblock scriptcontent %}

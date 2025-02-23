@@ -1,0 +1,198 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+<style>
+    .table thead th {
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        background-color: #f8f9fa !important;
+        padding: 12px 8px !important;
+        font-weight: 600 !important;
+    }
+    
+    .table tbody td {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 8px !important;
+        white-space: nowrap !important;
+    }
+    
+    .dataTables_wrapper .dataTables_scroll {
+        margin-bottom: 1rem;
+    }
+
+    .display {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="page-body">
+    {% include 'layout/breadcrumb.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5>Daftar Siswa - {{ school.nama_sekolah }}</h5>
+                            </div>
+                            <div class="col-6 text-end">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                    <i class="fa fa-plus"></i> Tambah Siswa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="dt-ext table-responsive">
+                            <table class="display" id="guru-student-table">
+                                <thead>
+                                    <tr>
+                                        <th>Aksi</th>
+                                        <th>No</th>
+                                        <th>NISN</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>Email</th>
+                                        <th>Jenis Kelamin</th>
+                                        <th>No. WhatsApp</th>
+                                        <th>Tinggi Badan</th>
+                                        <th>Berat Badan</th>
+                                        <th>Golongan Darah</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary btn-xs" onclick="editStudent('{{ student.id }}')" data-bs-toggle="modal" data-bs-target="#editStudentModal">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-xs" onclick="deleteStudent('{{ student.id }}')">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ student.nisn }}</td>
+                                        <td>{{ student.nama_lengkap }}</td>
+                                        <td>{{ student.email }}</td>
+                                        <td>{{ student.get_jenis_kelamin_display }}</td>
+                                        <td>{{ student.nomor_whatsapp }}</td>
+                                        <td>{{ student.tinggi_badan }} cm</td>
+                                        <td>{{ student.berat_badan }} kg</td>
+                                        <td>{{ student.golongan_darah }}</td>
+                                        <td>
+                                            <div class="badge {% if student.status_siswa == 'AKTIF' %}badge-success{% else %}badge-danger{% endif %}">
+                                                {{ student.get_status_siswa_display }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'component-guru/student/add-student.html'%}
+{% include 'component-guru/student/edit-student.html'%}
+{% endblock content %}
+
+{% block scriptcontent %}
+<script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'assets/js/datatable/datatable-extension/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'assets/js/datatable/datatable-extension/jszip.min.js' %}"></script>
+<script src="{% static 'assets/js/datatable/datatable-extension/buttons.html5.min.js' %}"></script>
+<script src="{% static 'assets/js/datatable/datatable-extension/buttons.print.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $('#guru-student-table').DataTable({
+        pageLength: 10,
+        scrollX: true,
+        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        buttons: [
+            {
+                extend: 'print',
+                text: '<i class="fa fa-print"></i> Print',
+                className: 'btn btn-primary btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                },
+                title: 'Daftar Siswa - {{ school.nama_sekolah }}'
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel-o"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                },
+                title: 'Daftar Siswa - {{ school.nama_sekolah }}'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                },
+                title: 'Daftar Siswa - {{ school.nama_sekolah }}'
+            }
+        ],
+        columnDefs: [
+            {
+                targets: '_all',
+                className: 'text-center align-middle'
+            }
+        ]
+    });
+});
+function editStudent(studentId) {
+    fetch(`/dashboard/guru/students/edit/${studentId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('edit_student_id').value = data.id;
+            document.getElementById('edit_nisn').value = data.nisn;
+            document.getElementById('edit_nama_lengkap').value = data.nama_lengkap;
+            document.getElementById('edit_email').value = data.email;
+            document.getElementById('edit_nomor_whatsapp').value = data.nomor_whatsapp;
+            document.getElementById('edit_jenis_kelamin').value = data.jenis_kelamin;
+            document.getElementById('edit_tinggi_badan').value = data.tinggi_badan;
+            document.getElementById('edit_berat_badan').value = data.berat_badan;
+            document.getElementById('edit_golongan_darah').value = data.golongan_darah;
+            document.getElementById('edit_status_siswa').value = data.status_siswa;
+            document.getElementById('editStudentForm').action = `/dashboard/guru/students/edit/${studentId}/`;
+        });
+}
+
+function deleteStudent(studentId) {
+    if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
+        fetch(`/dashboard/guru/students/delete/${studentId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock scriptcontent %}

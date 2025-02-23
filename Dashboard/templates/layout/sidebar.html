@@ -1,45 +1,73 @@
 {% load static %}
 {% load sass_tags %}
-<!-- page sidebar starts -->
 <header class="main-nav">
-  <div class="logo-wrapper"><a href="/"><img class="img-fluid" src="{% static 'assets/images/logo/logo.png' %}"
-        alt=""></a>
-  </div>
-  <div class="logo-icon-wrapper"><a href="/"><img class="img-fluid"
-        src="{% static 'assets/images/logo/logo-icon.png' %}" alt=""></a></div>
-  <div class="morden-logo"><a href="/"><img class="img-fluid" src="{% static 'assets/images/logo/morden-logo.png' %}"
-        alt=""></a></div>
+  <div class="logo-wrapper"><a href="/"><img class="img-fluid" src="{% static 'assets/images/logo/logo.png' %}" alt=""></a></div>
+  <div class="logo-icon-wrapper"><a href="/"><img class="img-fluid" src="{% static 'assets/images/logo/logo-icon.png' %}" alt=""></a></div>
+  <div class="morden-logo"><a href="/"><img class="img-fluid" src="{% static 'assets/images/logo/morden-logo.png' %}" alt=""></a></div>
   <nav>
     <div class="main-navbar">
       <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
       <div id="mainnav">
         <ul class="nav-menu custom-scrollbar">
           <li class="back-btn">
-            <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i>
-            </div>
+            <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
           </li>
-          <li class="sidebar-list"><a class="nav-link menu-title link-nav"  href="{% url 'admin_dashboard'%}"><i
-                data-feather="home"></i><span>Dashboard</span></a>
+
+          {% if user.role == 'ADMIN' %}
+          <!-- Admin Menu -->
+          <li class="sidebar-list">
+            <a class="nav-link menu-title link-nav" href="{% url 'admin_dashboard' %}">
+              <i data-feather="home"></i><span>Dashboard</span>
+            </a>
           </li>
           <li class="sidebar-list">
-            <a class="nav-link menu-title link-nav" "{% if segment == 'students' %}active{% endif %}" href="{% url 'student_list' %}">
-                <i data-feather="users"></i><span>Siswa</span>
+            <a class="nav-link menu-title link-nav" href="{% url 'user_list' %}">
+              <i class="fa fa-users"></i><span>Users</span>
             </a>
-        </li>
-        <li class="sidebar-list">
-          <a class="nav-link menu-title link-nav" href="{% url 'school_list' %}">
-            <i class="fa-solid fa-school"></i><span> Sekolah</span>
-          </a>
-      </li>
-      <li class="sidebar-list">
-          <a class="nav-link menu-title link-nav {% if segment == 'attendance' %}active{% endif %}" href="{% url 'attendance_list' %}">
-              <i class="fa-solid fa-clipboard-check"></i><span>Absensi</span>
-          </a>
-      </li>
-          
+          </li>
+          <li class="sidebar-list">
+            <a class="nav-link menu-title link-nav {% if segment == 'students' %}active{% endif %}" href="{% url 'student_list' %}">
+              <i data-feather="users"></i><span>Siswa</span>
+            </a>
+          </li>
+          <li class="sidebar-list">
+            <a class="nav-link menu-title link-nav" href="{% url 'school_list' %}">
+              <i class="fa-solid fa-school"></i><span>Sekolah</span>
+            </a>
+          </li>
+          {% endif %}
+
+          {% if user.role == 'GURU' %}
+          <li class="sidebar-list">
+              <a class="nav-link menu-title link-nav" href="{% url 'guru_dashboard' %}">
+                  <i data-feather="home"></i><span>Dashboard</span>
+              </a>
+          </li>
+          <li class="sidebar-list">
+              <a class="nav-link menu-title link-nav" href="{% url 'guru_student_list' %}">
+                  <i data-feather="users"></i><span>Siswa</span>
+              </a>
+          </li>
+          <li class="sidebar-list">
+              <a class="nav-link menu-title link-nav" href="{% url 'guru_attendance_list' %}">
+                  <i class="fa-solid fa-clipboard-check"></i><span>Absensi</span>
+              </a>
+          </li>
+          <li class="sidebar-list">
+              <a class="nav-link menu-title link-nav" href="{% url 'guru_permission_list' %}">
+                  <i class="fa-solid fa-notes-medical"></i>
+                  <span>Izin/Sakit</span>
+                  {% with pending_count=pending_permissions_count %}
+                    {% if pending_count > 0 %}
+                      <span class="badge rounded-pill bg-danger ms-2">{{ pending_count }}</span>
+                    {% endif %}
+                  {% endwith %}
+              </a>
+          </li>
+          {% endif %}
+        </ul>
       </div>
       <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
     </div>
   </nav>
 </header>
-<!-- page Sidebar Ends-->

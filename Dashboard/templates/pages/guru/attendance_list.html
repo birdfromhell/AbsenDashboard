@@ -1,0 +1,245 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/datatables.css' %}">
+<style>
+    .table thead th {
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        background-color: #f8f9fa !important;
+        padding: 12px 8px !important;
+        font-weight: 600 !important;
+    }
+    
+    .table tbody td {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 8px !important;
+        white-space: nowrap !important;
+    }
+    
+    .filter-row {
+        background-color: #f8f9fa;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="page-body">
+    {% include 'layout/breadcrumb.html' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Daftar Absensi - {{ school.nama_sekolah }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filter Section -->
+                        <div class="filter-row">
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Tanggal</label>
+                                    <input type="date" class="form-control" id="date_filter">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" id="status_filter">
+                                        <option value="">Semua Status</option>
+                                        <option value="HADIR">Hadir</option>
+                                        <option value="SAKIT">Sakit</option>
+                                        <option value="IZIN">Izin</option>
+                                        <option value="ALPA">Alpha</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Tipe Absen</label>
+                                    <select class="form-select" id="type_filter">
+                                        <option value="">Semua Tipe</option>
+                                        <option value="MASUK">Masuk</option>
+                                        <option value="PULANG">Pulang</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Siswa</label>
+                                    <select class="form-select" id="student_filter">
+                                        <option value="">Semua Siswa</option>
+                                        {% for student in students %}
+                                        <option value="{{ student.id }}">{{ student.nisn }} - {{ student.nama_lengkap }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Table Section -->
+                        <div class="table-responsive">
+                            <table class="display" id="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Jam</th>
+                                        <th>NISN</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Status</th>
+                                        <th>Tipe Absen</th>
+                                        <th>Lokasi</th>
+                                        <th>Foto</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for attendance in attendances %}
+                                    <tr>
+                                        <td>{{ attendance.date|date:"d/m/Y" }}</td>
+                                        <td>{{ attendance.time|time:"H:i" }}</td>
+                                        <td>{{ attendance.student.nisn }}</td>
+                                        <td>{{ attendance.student.nama_lengkap }}</td>
+                                        <td>
+                                            <span class="badge {% if attendance.status == 'HADIR' %}badge-success{% elif attendance.status == 'SAKIT' or attendance.status == 'IZIN' %}badge-warning{% else %}badge-danger{% endif %}">
+                                                {{ attendance.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ attendance.get_absen_type_display }}</td>
+                                        <td>{{ attendance.location|default:'-' }}</td>
+                                        <td>
+                                            {% if attendance.photo %}
+                                            <a href="{{ attendance.photo.url }}" target="_blank">
+                                                <img src="{{ attendance.photo.url }}" alt="Photo" height="50">
+                                            </a>
+                                            {% else %}
+                                            -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary btn-xs" onclick="editAttendance('{{ attendance.id }}')" data-bs-toggle="modal" data-bs-target="#editAttendanceModal">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'component-guru/attendance/edit-attendance.html' %}
+{% endblock content %}
+
+{% block scriptcontent %}
+<script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    var table = $('#attendance-table').DataTable({
+        pageLength: 10,
+        scrollX: true,
+        order: [[0, 'desc'], [1, 'desc']],
+        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel-o"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                },
+                title: 'Daftar Absensi - {{ school.nama_sekolah }}'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6]
+                },
+                title: 'Daftar Absensi - {{ school.nama_sekolah }}'
+            }
+        ]
+    });
+
+    // Add data-student-id to rows
+    {% for attendance in attendances %}
+    $(table.row().nodes()).eq({{ forloop.counter0 }}).find('td:eq(3)')
+        .attr('data-student-id', '{{ attendance.student.id }}');
+    {% endfor %}
+
+    // Date filter formatting
+    function formatDate(date) {
+        if (!date) return '';
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return day + '/' + month + '/' + year;
+    }
+
+    // Custom filtering function
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        // Get filter values
+        var dateFilter = formatDate($('#date_filter').val());
+        var statusFilter = $('#status_filter').val().toUpperCase();
+        var typeFilter = $('#type_filter').val().toUpperCase();
+        var studentFilter = $('#student_filter').val();
+        
+        // Get row data
+        var date = data[0]; // date column
+        var status = $(table.row(dataIndex).node()).find('td:eq(4) span').text().trim().toUpperCase();
+        var type = data[5].toUpperCase(); // type column
+        var studentId = $(table.row(dataIndex).node()).find('td:eq(3)').attr('data-student-id');
+
+        // Match conditions
+        var dateMatch = !dateFilter || date === dateFilter;
+        var statusMatch = !statusFilter || status.includes(statusFilter);
+        var typeMatch = !typeFilter || type.includes(typeFilter);
+        var studentMatch = !studentFilter || studentId === studentFilter;
+
+        return dateMatch && statusMatch && typeMatch && studentMatch;
+    });
+
+    // Apply filters on change
+    $('#date_filter, #status_filter, #type_filter, #student_filter').on('change', function() {
+        table.draw();
+    });
+
+    // Date filter initialization
+    $('#date_filter').on('change', function() {
+        table.draw();
+    });
+});
+
+function editAttendance(attendanceId) {
+    fetch(`/dashboard/guru/attendance/edit/${attendanceId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('edit_attendance_id').value = data.id;
+            document.getElementById('edit_student').value = data.student;
+            document.getElementById('edit_date').value = data.date;
+            document.getElementById('edit_status').value = data.status;
+            document.getElementById('edit_absen_type').value = data.absen_type;
+            document.getElementById('edit_location').value = data.location || '';
+            if (data.photo_url) {
+                document.getElementById('current_photo').src = data.photo_url;
+                document.getElementById('current_photo').style.display = 'block';
+            } else {
+                document.getElementById('current_photo').style.display = 'none';
+            }
+        });
+}
+</script>
+{% endblock scriptcontent %}

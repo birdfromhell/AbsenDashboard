@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from Dashboard.models import School, User, Student, Attendance
+from Dashboard.models import School, User, Student, Attendance,AttendancePermission
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,3 +52,18 @@ class AttendanceImageHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = ['absen_type', 'absen_type_display', 'photo', 'location', 'time', 'date']
+
+class AttendancePermissionSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='student.nama_lengkap', read_only=True)
+    school_name = serializers.CharField(source='sekolah.nama_sekolah', read_only=True)
+    permission_type_display = serializers.CharField(source='get_permission_type_display', read_only=True)
+    accept_status_display = serializers.CharField(source='get_accept_status_display', read_only=True)
+    
+    class Meta:
+        model = AttendancePermission
+        fields = [
+            'id', 'date', 'permission_type', 'permission_type_display',
+            'reason', 'document', 'accept_status', 'accept_status_display',
+            'student', 'student_name', 'sekolah', 'school_name',
+            'created_at', 'updated_at'
+        ]

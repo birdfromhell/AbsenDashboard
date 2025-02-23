@@ -1,2 +1,220 @@
-{% extends 'layout/base.html' %}{% load static %}
+{% extends 'layout/base.html' %}
+{% load static %}
 {% load sass_tags %}
+
+{% block css %}
+<!-- Plugins css start-->
+<link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/animate.scss' %}">
+<link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/chartist.scss' %}">
+<link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/prism.scss' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="page-body">
+    {% include 'layout/breadcrumb.html' %}
+    <!-- Container-fluid starts-->
+    <div class="container-fluid default-dash">
+        <div class="row">
+            <!-- Statistics Card -->
+            <div class="col-xl-8 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Statistik Kehadiran Minggu Ini</h5>
+                        <div class="card-header-right">
+                            <ul class="setting-option">
+                                <li><i class="icofont icofont-maximize full-card"></i></li>
+                                <li><i class="icofont icofont-minus minimize-card"></i></li>
+                                <li><i class="icofont icofont-refresh reload-card"></i></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="attendance-chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Distribution Card -->
+            <div class="col-xl-4 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Status Siswa</h5>
+                        <div class="card-header-right">
+                            <ul class="setting-option">
+                                <li><i class="icofont icofont-maximize full-card"></i></li>
+                                <li><i class="icofont icofont-minus minimize-card"></i></li>
+                                <li><i class="icofont icofont-refresh reload-card"></i></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="media">
+                                    <i class="fa fa-circle text-success f-10 m-r-10"></i>
+                                    <div class="media-body">
+                                        <h6 class="mb-1">Aktif</h6>
+                                        <h4 class="counter">{{ status_distribution.AKTIF }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="media">
+                                    <i class="fa fa-circle text-primary f-10 m-r-10"></i>
+                                    <div class="media-body">
+                                        <h6 class="mb-1">Alumni</h6>
+                                        <h4 class="counter">{{ status_distribution.ALUMNI }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="media">
+                                    <i class="fa fa-circle text-warning f-10 m-r-10"></i>
+                                    <div class="media-body">
+                                        <h6 class="mb-1">Pindah</h6>
+                                        <h4 class="counter">{{ status_distribution.PINDAH }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="media">
+                                    <i class="fa fa-circle text-danger f-10 m-r-10"></i>
+                                    <div class="media-body">
+                                        <h6 class="mb-1">Dikeluarkan</h6>
+                                        <h4 class="counter">{{ status_distribution.DIKELUARKAN }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Attendance Summary -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Rekap Absensi Hari Ini</h5>
+                        <div class="card-header-right">
+                            <ul class="setting-option">
+                                <li><i class="icofont icofont-maximize full-card"></i></li>
+                                <li><i class="icofont icofont-minus minimize-card"></i></li>
+                                <li><i class="icofont icofont-refresh reload-card"></i></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card o-hidden">
+                                    <div class="bg-success b-r-4 card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <h6 class="text-white">Hadir</h6>
+                                                <h4 class="mb-0 counter text-white">{{ today_attendance_counts.HADIR }}</h4>
+                                            </div>
+                                            <i class="fa fa-check-circle icon-bg"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card o-hidden">
+                                    <div class="bg-warning b-r-4 card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <h6 class="text-white">Sakit</h6>
+                                                <h4 class="mb-0 counter text-white">{{ today_attendance_counts.SAKIT }}</h4>
+                                            </div>
+                                            <i class="fa fa-thermometer-half icon-bg"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card o-hidden">
+                                    <div class="bg-info b-r-4 card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <h6 class="text-white">Izin</h6>
+                                                <h4 class="mb-0 counter text-white">{{ today_attendance_counts.IZIN }}</h4>
+                                            </div>
+                                            <i class="fa fa-envelope icon-bg"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div class="card o-hidden">
+                                    <div class="bg-danger b-r-4 card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <h6 class="text-white">Alpha</h6>
+                                                <h4 class="mb-0 counter text-white">{{ today_attendance_counts.ALPHA }}</h4>
+                                            </div>
+                                            <i class="fa fa-times-circle icon-bg"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scriptcontent %}
+<!-- Plugins JS start-->
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script src="{% static 'assets/js/counter/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'assets/js/counter/jquery.counterup.min.js' %}"></script>
+<script src="{% static 'assets/js/counter/counter-custom.js' %}"></script>
+<script>
+$(document).ready(function() {
+    // Initialize attendance chart
+    var options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        series: [{
+            name: 'Kehadiran',
+            data: {{ attendance_data|safe }}
+        }],
+        xaxis: {
+            categories: {{ last_7_days|safe }}
+        },
+        colors: ['#4099ff'],
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.9,
+                stops: [0, 90, 100]
+            }
+        }
+    };
+
+    var chart = new ApexCharts(
+        document.querySelector("#attendance-chart"),
+        options
+    );
+    chart.render();
+});
+</script>
+{% endblock scriptcontent %}

@@ -1,0 +1,87 @@
+<div class="modal fade" id="schoolStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Daftar Siswa - <span id="schoolName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="studentSearch" placeholder="Cari siswa...">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Semua Status</option>
+                            <option value="AKTIF">Aktif</option>
+                            <option value="ALUMNI">Alumni</option>
+                            <option value="PINDAH">Pindah</option>
+                            <option value="DIKELUARKAN">Dikeluarkan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="display" id="schoolStudentsTable">
+                        <thead>
+                            <tr>
+                                <th>NISN</th>
+                                <th>Nama Lengkap</th>
+                                <th>Email</th>
+                                <th>Jenis Kelamin</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsList">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        function showStudents(schoolId) {
+        fetch(`/dashboard/admin/schools/${schoolId}/students/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('schoolName').textContent = data.school_name;
+                const table = $('#schoolStudentsTable').DataTable();
+                table.clear();
+                
+                data.students.forEach(student => {
+                    table.row.add([
+                        student.nisn,
+                        student.nama_lengkap,
+                        student.email,
+                        student.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                        `<div class="badge ${student.status_siswa === 'AKTIF' ? 'badge-success' : 'badge-danger'}">${student.status_siswa}</div>`
+                    ]);
+                });
+                
+                table.draw();
+            });
+    }
+    
+    $(document).ready(function() {
+        // Initialize DataTable for students modal
+        $('#schoolStudentsTable').DataTable({
+            pageLength: 5,
+            dom: 'lrtip',
+            ordering: true
+        });
+        
+        // Search functionality
+        $('#studentSearch').keyup(function() {
+            $('#schoolStudentsTable').DataTable().search($(this).val()).draw();
+        });
+        
+        // Status filter
+        $('#statusFilter').change(function() {
+            let status = $(this).val();
+            $('#schoolStudentsTable').DataTable()
+                .column(4)
+                .search(status)
+                .draw();
+        });
+    });
+</script>

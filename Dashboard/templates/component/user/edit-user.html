@@ -1,0 +1,47 @@
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" id="editUserForm">
+                {% csrf_token %}
+                <input type="hidden" id="edit_user_id" name="user_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" name="username" id="edit_username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" name="nama_lengkap" id="edit_nama_lengkap" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="edit_email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" name="role" id="edit_role" required>
+                            <option value="ADMIN">Admin</option>
+                            <option value="GURU">Guru</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status_aktif" id="edit_status_aktif">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
