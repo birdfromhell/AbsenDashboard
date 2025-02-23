@@ -1,0 +1,68 @@
+```django-html
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'user_add' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" name="nama_lengkap" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" name="role" id="role" onchange="toggleSchoolSelect()" required>
+                            <option value="ADMIN">Admin</option>
+                            <option value="GURU">Guru</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="schoolSelectDiv" style="display:none;">
+                        <label class="form-label">Sekolah</label>
+                        <select class="form-select" name="sekolah" id="sekolah">
+                            <option value="">Pilih Sekolah</option>
+                            {% for school in schools %}
+                                <option value="{{ school.id }}">{{ school.nama_sekolah }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleSchoolSelect() {
+    const role = document.getElementById('role').value;
+    const schoolDiv = document.getElementById('schoolSelectDiv');
+    const schoolSelect = document.getElementById('sekolah');
+    
+    if (role === 'GURU') {
+        schoolDiv.style.display = 'block';
+        schoolSelect.required = true;
+    } else {
+        schoolDiv.style.display = 'none';
+        schoolSelect.required = false;
+    }
+}
+</script>

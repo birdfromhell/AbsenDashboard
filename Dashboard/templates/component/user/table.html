@@ -1,0 +1,59 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Daftar User</h5>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="fa fa-plus"></i> Tambah User
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="display" id="user-table">
+                            <thead>
+                                <tr>
+                                    <th>Aksi</th>
+                                    <th>Username</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-primary btn-xs" onclick="editUser('{{ user.id }}')" data-bs-toggle="modal" data-bs-target="#editUserModal">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-xs" onclick="deleteUser('{{ user.id }}')">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.nama_lengkap }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <span class="badge {% if user.role == 'ADMIN' %}bg-danger{% else %}bg-primary{% endif %}">
+                                            {{ user.get_role_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if user.status_aktif %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ user.status_aktif|yesno:"Active,Inactive" }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

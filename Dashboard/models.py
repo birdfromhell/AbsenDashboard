@@ -198,6 +198,12 @@ class AttendancePermission(models.Model):
         ('IZIN', 'Izin'),
     ]
 
+    ACCEPT_STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected')
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey(
         'Student',
@@ -212,6 +218,17 @@ class AttendancePermission(models.Model):
     date = models.DateField()
     permission_type = models.CharField(max_length=5, choices=PERMISSION_TYPE_CHOICES)
     reason = models.TextField(null=True, blank=True)
+    document = models.FileField(
+        upload_to='permission_documents/',
+        null=True, 
+        blank=True,
+        help_text='Upload dokumen pendukung (PDF/Image)'
+    )
+    accept_status = models.CharField(
+        max_length=8,
+        choices=ACCEPT_STATUS_CHOICES,
+        default='PENDING'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -222,4 +239,5 @@ class AttendancePermission(models.Model):
         unique_together = ['date', 'student', 'sekolah', 'permission_type']
 
     def __str__(self):
-        return f"{self.student.nama_lengkap} - {self.date} - {self.get_permission_type_display()}"
+        return f"{self.student.nama_lengkap} - {self.date} - {self.get_permission_type_display()} - {self.get_accept_status_display()}"
+

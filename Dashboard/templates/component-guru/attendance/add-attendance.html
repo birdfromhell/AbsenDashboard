@@ -1,0 +1,62 @@
+<div class="modal fade" id="addAttendanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Absensi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'guru_attendance_add' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Siswa</label>
+                                <select class="form-select" name="student" required>
+                                    <option value="">Pilih Siswa</option>
+                                    {% for student in students %}
+                                    <option value="{{ student.id }}">{{ student.nisn }} - {{ student.nama_lengkap }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal</label>
+                                <input type="date" class="form-control" name="date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" name="status" required>
+                                    <option value="HADIR">Hadir</option>
+                                    <option value="SAKIT">Sakit</option>
+                                    <option value="IZIN">Izin</option>
+                                    <option value="ALPHA">Alpha</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tipe Absen</label>
+                                <select class="form-select" name="absen_type" required>
+                                    <option value="MASUK">Masuk</option>
+                                    <option value="PULANG">Pulang</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Lokasi</label>
+                                <input type="text" class="form-control" name="location">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Foto</label>
+                                <input type="file" class="form-control" name="photo" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

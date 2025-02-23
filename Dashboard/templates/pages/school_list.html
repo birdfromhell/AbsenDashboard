@@ -7,19 +7,45 @@
 <link rel="stylesheet" type="text/css" href="{% sass_src 'assets/scss/vendors/datatables.scss' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/buttons.dataTables.min.css' %}">
 <style>
-    .table thead th {
-        text-align: center;
-        vertical-align: middle;
+    .table thead th,
+    .dataTables_scrollHead th {
+        text-align: center !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        background-color: #f8f9fa !important;
+        padding: 12px 8px !important;
+        font-weight: 600 !important;
     }
     
-    .table tbody td {
-        text-align: center;
-        vertical-align: middle;
+    .table tbody td,
+    .dataTables_scrollBody td {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 8px !important;
+        white-space: nowrap !important;
     }
     
     .btn-xs {
         padding: 0.2rem 0.5rem;
         font-size: 0.75rem;
+    }
+
+    .dataTables_wrapper .dataTables_scroll {
+        margin-bottom: 1rem;
+    }
+
+    .dataTables_scrollHead,
+    .dataTables_scrollBody {
+        width: 100% !important;
+    }
+
+    .dataTables_scroll {
+        overflow-x: auto;
+    }
+
+    table.dataTable {
+        margin: 0 !important;
+        width: 100% !important;
     }
 </style>
 {% endblock css %}
@@ -28,44 +54,92 @@
 <div class="page-body">
     {% include 'layout/breadcrumb.html' %}
     {% include 'component/school/school-list.html' %}
+    {% include 'component/school/school-student.html' %}
 </div>
 {% endblock content %}
 
 {% block scriptcontent %}
-<!-- Plugins JS start-->
 <script src="{% static 'assets/js/datatable/datatables/jquery.dataTables.min.js' %}"></script>
 <script>
 $(document).ready(function() {
     $('#school-table').DataTable({
         pageLength: 10,
         scrollX: true,
-        dom: 'Bfrtip',
-        buttons: [
+        responsive: false,
+        autoWidth: false,
+        fixedHeader: true,
+        columnDefs: [
             {
-                extend: 'print',
-                text: '<i class="fa fa-print"></i> Print',
-                className: 'btn btn-primary',
-                exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-                }
+                targets: 0,
+                width: '80px',
+                orderable: false,
+                className: 'text-center align-middle'
             },
             {
-                extend: 'excel',
-                text: '<i class="fa fa-file-excel-o"></i> Excel',
-                className: 'btn btn-success',
-                exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-                }
+                targets: 1,
+                width: '100px',
+                className: 'text-center align-middle'
             },
             {
-                extend: 'pdf',
-                text: '<i class="fa fa-file-pdf-o"></i> PDF',
-                className: 'btn btn-danger',
-                exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-                }
+                targets: 2,
+                width: '200px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 3,
+                width: '250px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 4,
+                width: '150px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 5,
+                width: '150px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 6,
+                width: '100px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 7,
+                width: '120px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 8,
+                width: '200px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 9,
+                width: '200px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 10,
+                width: '200px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 11,
+                width: '200px',
+                className: 'text-center align-middle'
+            },
+            {
+                targets: 12,
+                width: '100px',
+                className: 'text-center align-middle'
             }
-        ]
+        ],
+        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        buttons: [/* ... existing buttons ... */]
     });
 });
 </script>

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from Dashboard.seeders import seed_users, seed_students, seed_schools, seed_attendance
-from Dashboard.models import User, Student, School, Attendance
+from Dashboard.seeders import seed_users, seed_students, seed_schools, seed_attendance, seed_attendance_permissions
+from Dashboard.models import User, Student, School, Attendance, AttendancePermission
 
 class Command(BaseCommand):
     help = 'seed database'
@@ -30,5 +30,10 @@ class Command(BaseCommand):
             seed_attendance()
         else:
             self.stdout.write('Attendance records already exist, skipping...')
+        if AttendancePermission.objects.count() == 0:
+            self.stdout.write('Seeding attendance permissions...')
+            seed_attendance_permissions()
+        else:
+            self.stdout.write('Attendance permissions already exist, skipping...')
 
         self.stdout.write(self.style.SUCCESS('Database seeding completed!'))
